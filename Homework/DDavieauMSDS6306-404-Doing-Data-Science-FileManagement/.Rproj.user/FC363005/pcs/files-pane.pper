@@ -1,0 +1,13 @@
+{
+    "path" : "~/GitHub/DDavieauMSDS6306-404-Doing-Data-Science-FileManagement",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 1
+        },
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
