@@ -1,1 +1,1 @@
-Each Folder in this Directory relates to each Live Sessions Homework Assignment.
+Each Folder in this directory relates to a weekly homework assignment.
