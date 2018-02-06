@@ -46,7 +46,7 @@ major_count
 ######c.	To make things easier to read, put par(las=2) before your plot to make the text perpendicular to the axis.  Make a barplot of major_count.  Make sure to label the title with something informative (check the vignette if you need), label the x and y axis, and make it any color other than grey.  Assign the major_category labels to their respective bar.  Flip the barplot horizontally so that bars extend to the right, not upward.  All of these options can be done in a single pass of barplot(). Note: It’s okay if it’s wider than the preview pane.
 ```{r}
 par(las=2)
-barplot(major_count[,1],main ="Picking A College Data", ylab="majors", xlab = "Count", horiz = TRUE, col = 4, xlim = c(0,30))
+barplot(major_count[,1],main ="Picking A College Data", ylab="majors", xlab = "", horiz = TRUE, col = 4, xlim = c(0,30))
 ```
 
 
