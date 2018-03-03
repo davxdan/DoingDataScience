@@ -1,0 +1,42 @@
+---
+title: "Unit9BLT"
+author: "Daniel Davieau"
+date: "February 27, 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy = TRUE)
+```
+## The RFacebook API
+---  
+
+First we need to get a temporary token
+[Link to the Facebook ToolsExplorer](https://developers.facebook.com/tools/explorer/?method=GET&path=909402369070268&version=v2.12)  
+
+
+>Now we load the RFacebook library and assign the token to a variable  
+
+
+```{r}
+library(Rfacebook)
+token <- "EAACEdEose0cBADxXqj4r362LvUQykUKq8dnZCLdcd3r966WJPwvwZCZCWkIWA9iPWZCNc3YMpqu2RFwhrIZAQ2nKuLarzMqCzCjuXjald8yAQN84N7mAeHR3xGZAasYvg6oIPZAavgPQ84jrZCe9w9DLgJrZCTdjAZCtwULtsbDOuJ9GMZCozmlZA5inh8x7BYZAz8YiX1BMYmIcRUQZDZD" 
+```
+
+
+> Try the getUsers function  
+
+
+```{r}
+me <- getUsers("909402369070268", token=token)
+me
+```
+
+
+>Try the getFriends function with and without simplify  
+
+
+```{r}
+myfriends<- getFriends(token, simplify = FALSE)
+myfriends
+```
