@@ -16,14 +16,26 @@ a. In the IMDB, there are listings of full cast members for movies.  Navigate to
 
 ```{r}
 
-siteurl<-"http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1"
-IMDB_Raw<-GET(url=siteurl)
-IMDB_Raw
-'<div class="offer-name">
-  <a href="http://www.somesite.com" itemprop="name">Fancy Product</a>
-  </div>' -> xData
 library(XML)
-parsedHTML <- xmlParse(xData)
+library(httr)
+
+#siteurl<-"http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1"
+#IMDB_Raw<-GET(url=siteurl)
+IMDB_Temp<-'<table class="cast_list">'
+
+
+
+#'<div class="offer-name">
+#  <a href="http://www.somesite.com" itemprop="name">Fancy Product</a>
+#  </div>' -> xData
+
+
+
+
+
+
+parsedHTML <- xmlParse("IMDB_Raw.txt")
+parsedHTML
 Products <- xpathSApply(parsedHTML, "//div[@class='offer-name']", xmlValue) 
 hrefs <- xpathSApply(parsedHTML, "//div/a", xmlGetAttr, 'href')
 > hrefs
