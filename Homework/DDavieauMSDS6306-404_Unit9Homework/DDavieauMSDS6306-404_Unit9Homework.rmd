@@ -15,31 +15,40 @@ knitr::opts_chunk$set(echo = TRUE)
 a. In the IMDB, there are listings of full cast members for movies.  Navigate to http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1.  Feel free to View Source to get a good idea of what the page looks like in code. 
 
 ```{r}
-
+#Source of info http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.707.4464&rep=rep1&type=pdf
 library(XML)
 library(httr)
+library(tidyHTML)
+siteurl<-"http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1"
+IMDB_Source<-GET(url=siteurl)
+IMDB_Raw<-xmlParse(siteurl, isHTML = TRUE)
+IMDB_Raw<-htmlTreeParse(siteurl)
+IMDB_Root<-xmlRoot(IMDB_Raw)
+IMDB_Children<-xmlChildren(IMDB_Root)
+xmlNamespace(IMDB_Root)
+xmlName(IMDB_Root)
+xmlSize(IMDB_Root)
+class(IMDB_Raw)
+class(IMDB_Root)
+IMDB_Children<-xmlChildren(IMDB_Root)
+class(IMDB_Children)
+RootChildren<-xmlChildren(IMDB_Root)
+getNodeSet(IMDB_Raw, "//name")
+IMDB_NAmes<-getNodeSet(IMDB_Raw, "//name")
+xmlSize(IMDB_Root)
+xmlSApply(IMDB_Root, xmlName)
+IMDB_body = xmlChildren(IMDB_Root)$body
+xpathSApply(IMDB_body, "h1")
+xpathSApply(IMDB_body, "h2")
+IMDB_Content<- readHTMLTable(IMDB_Raw,which = 1)
+IMDB_Content<- readHTMLTable(IMDB_body,which = 1)
+IMDB_Children<-xmlChildren(IMDB_Root)
+RootChildren<-xmlChildren(IMDB_Root)
+getNodeSet(IMDB_Raw, "//name")
+IMDB_NAmes<-getNodeSet(IMDB_Raw, "//name")
+IMDB_xml_Names<-xmlSApply(IMDB_Root, xmlName)
+IMDB_body = xmlChildren(IMDB_Root)$body
 
-#siteurl<-"http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1"
-#IMDB_Raw<-GET(url=siteurl)
-IMDB_Temp<-'<table class="cast_list">'
-
-
-
-#'<div class="offer-name">
-#  <a href="http://www.somesite.com" itemprop="name">Fancy Product</a>
-#  </div>' -> xData
-
-
-
-
-
-
-parsedHTML <- xmlParse("IMDB_Raw.txt")
-parsedHTML
-Products <- xpathSApply(parsedHTML, "//div[@class='offer-name']", xmlValue) 
-hrefs <- xpathSApply(parsedHTML, "//div/a", xmlGetAttr, 'href')
-> hrefs
-[1] "http://www.somesite.com"
 
 
 
