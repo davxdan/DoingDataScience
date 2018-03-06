@@ -23,6 +23,9 @@ library(XML)
 library(httr)
 library(dplyr)
 siteurl<-"http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1"
+```
+
+```{r,}
 IMDB_Raw<-xmlParse(siteurl, isHTML = TRUE)
 IMDB_Root<-xmlRoot(IMDB_Raw)
 IMDB_body = xmlChildren(IMDB_Root)$body
@@ -78,18 +81,52 @@ rm(list=ls())
 library(XML)
 library(httr)
 library(dplyr)
-
+```
+```{r}
 siteurl<-"http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs"
-spurs_Raw<-xmlTreeParse(siteurl,isHTML = TRUE)
-#spurs_Raw<-readHTMLTable(spurs_Raw)
-spurs_Root<-xmlRoot(spurs_Raw)
-spurs_Children<-xmlChildren(spurs_Root)
-#spurs_Content<- readHTMLTable(spurs_body,which = 1)
+#spurs_Raw<-xmlTreeParse(siteurl,isHTML = TRUE,useInternalNodes = FALSE)
+#class(spurs_Raw)
+spurs_html_Raw<-htmlParse(siteurl)
+```
+```{R}
+#spurs_html_tree_Raw<-htmlTreeParse(siteurl)
+spurs_Root<-xmlRoot(spurs_html_Raw)
+spurs_body<-xmlChildren(spurs_Root)$body
+spurs_Content<- readHTMLTable(spurs_body,which = 1)
 ```
 c. Clean up the table (You might get some warnings if you’re working with tibbles) 
 * You’ll want to create an R data.frame() with one observation for each player.  Make sure that you do not accidentally include blank rows, a row of column names, or the Totals row in the table as observations. 
+```{r}
+spurs_Content<-spurs_Content[-c(1:22,40), ] 
+names(spurs_Content)<-c("PLAYER","FGM","FGA","FGpct","ThreePM","ThreePA","ThreePpct","FTM","FTA","FTpct","TwoPM","TwoPA","TwoPpct","PPS","AFGpct")
+```
+
 * The column PLAYER has two variables of interest in it: the player’s name and their position, denoted by 1-2 letters after their name.  Split the cells into two columns, one with Name and the other Position. 
+```{r}
+separate(spurs_Content, PLAYER, c("PlayerName", "Position"), sep = ",", remove = TRUE, convert = FALSE, extra = "warn", fill = "warn")
+spurs_Content
+```
+
 * Check the data type of all columns.  Convert relevant columns to numeric.  Check the data type of all columns again to confirm that they have changed! 
+```{r}
+spurs_Content$FGM <- as.numeric(as.character(spurs_Content$FGM))
+spurs_Content$FGA <- as.numeric(as.character(spurs_Content$FGA))
+spurs_Content$FGpct <- as.numeric(as.character(spurs_Content$FGpct))
+spurs_Content$ThreePM <- as.numeric(as.character(spurs_Content$ThreePM))
+spurs_Content$ThreePA <- as.numeric(as.character(spurs_Content$ThreePA))
+spurs_Content$ThreePpct <- as.numeric(as.character(spurs_Content$ThreePpct))
+spurs_Content$FTM <- as.numeric(as.character(spurs_Content$FTM))
+spurs_Content$FTA <- as.numeric(as.character(spurs_Content$FTA))
+spurs_Content$FTpct <- as.numeric(as.character(spurs_Content$FTpct))
+
+spurs_Content$TwoPM <- as.numeric(as.character(spurs_Content$TwoPM))
+spurs_Content$TwoPA <- as.numeric(as.character(spurs_Content$TwoPA))
+spurs_Content$TwoPpct <- as.numeric(as.character(spurs_Content$TwoPpct))
+spurs_Content$PPS <- as.numeric(as.character(spurs_Content$PPS))
+spurs_Content$AFGpct <- as.numeric(as.character(spurs_Content$AFGpct))
+spurs_Content
+```
+
 
 d. Create a colorful bar chart that shows the Field Goals Percentage Per Game for each person. It will be graded on the following criteria. 
 * Informative Title, centered 

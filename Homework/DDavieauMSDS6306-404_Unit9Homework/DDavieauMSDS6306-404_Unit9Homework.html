@@ -143,8 +143,8 @@ library(dplyr)</code></pre>
 <pre><code>## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>siteurl&lt;-&quot;http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1&quot;
-IMDB_Raw&lt;-xmlParse(siteurl, isHTML = TRUE)</code></pre>
+<pre class="r"><code>siteurl&lt;-&quot;http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1&quot;</code></pre>
+<pre class="r"><code>IMDB_Raw&lt;-xmlParse(siteurl, isHTML = TRUE)</code></pre>
 <pre><code>## Unexpected end tag : a
 ## Unexpected end tag : noscript
 ## htmlParseEntityRef: no name
@@ -212,6 +212,14 @@ IMDB_Raw&lt;-xmlParse(siteurl, isHTML = TRUE)</code></pre>
 ## Unexpected end tag : script
 ## htmlParseEntityRef: no name
 ## htmlParseEntityRef: no name
+## Unexpected end tag : style
+## Unexpected end tag : embed
+## Unexpected end tag : div
+## Unexpected end tag : object
+## Unexpected end tag : a
+## Unexpected end tag : a
+## Unexpected end tag : noscript
+## Unexpected end tag : div
 ## Unexpected end tag : style
 ## Unexpected end tag : a
 ## Unexpected end tag : a
@@ -328,23 +336,31 @@ IMDB_Stage2Actors&lt;-extract(IMDB_Stage2Actors, Name, c(&quot;FirstName&quot;, 
 <li><p>On the ESPN website, there are statistics of each NBA player. Navigate to the San Antonio Spurs current statistics (likely <a href="http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs" class="uri">http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs</a>). You are interested in the Shooting Statistics table.</p></li>
 <li><p>Scrape the page with any R package that makes things easy for you. There are a few tables on the page, so make sure you are targeting specifically the Shooting Statistics table.</p></li>
 </ol>
-<pre class="r"><code>#rm(list=ls())
-#library(XML)
-#library(httr)
-#library(dplyr)
-
-#siteurl&lt;-&quot;http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs&quot;
-#spurs_Raw&lt;-xmlTreeParse(siteurl,isHTML = TRUE)
-#spurs_Raw&lt;-readHTMLTable(spurs_Raw)
-#spurs_Root&lt;-xmlRoot(spurs_Raw)
-#spurs_Children&lt;-xmlChildren(spurs_Root)
-#spurs_Content&lt;- readHTMLTable(spurs_body,which = 1)</code></pre>
+<pre class="r"><code>rm(list=ls())
+library(XML)
+library(httr)
+library(dplyr)</code></pre>
+<pre class="r"><code>siteurl&lt;-&quot;http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs&quot;
+#spurs_Raw&lt;-xmlTreeParse(siteurl,isHTML = TRUE,useInternalNodes = FALSE)
+#class(spurs_Raw)
+spurs_html_Raw&lt;-htmlParse(siteurl)</code></pre>
+<pre class="r"><code>#spurs_html_tree_Raw&lt;-htmlTreeParse(siteurl)
+spurs_Root&lt;-xmlRoot(spurs_html_Raw)
+spurs_body&lt;-xmlChildren(spurs_Root)$body
+spurs_Content&lt;- readHTMLTable(spurs_body,which = 1)</code></pre>
 <ol start="3" style="list-style-type: lower-alpha">
 <li>Clean up the table (You might get some warnings if you’re working with tibbles)</li>
 </ol>
 <ul>
 <li>You’ll want to create an R data.frame() with one observation for each player. Make sure that you do not accidentally include blank rows, a row of column names, or the Totals row in the table as observations.</li>
+</ul>
+<pre class="r"><code>spurs_Content&lt;-spurs_Content[-c(1:22,40), ] 
+names(spurs_Content)&lt;-c(&quot;PLAYER&quot;,&quot;FGM&quot;,&quot;FGA&quot;,&quot;FG%&quot;,&quot;3PM&quot;,&quot;3PA&quot;,&quot;3P%&quot;,&quot;FTM&quot;,&quot;FTA&quot;,&quot;FT%&quot;,&quot;2PM&quot;,&quot;2PA&quot;,&quot;2P%&quot;,&quot;PPS&quot;,&quot;AFG%&quot;)</code></pre>
+<ul>
 <li>The column PLAYER has two variables of interest in it: the player’s name and their position, denoted by 1-2 letters after their name. Split the cells into two columns, one with Name and the other Position.</li>
+</ul>
+<pre class="r"><code>spurs_Content&lt;-extract(spurs_Content, PLAYER, c(&quot;PlayerName&quot;, &quot;Position&quot;), &quot;([^ ]+) (.*)&quot;)</code></pre>
+<ul>
 <li>Check the data type of all columns. Convert relevant columns to numeric. Check the data type of all columns again to confirm that they have changed!</li>
 </ul>
 <ol start="4" style="list-style-type: lower-alpha">
