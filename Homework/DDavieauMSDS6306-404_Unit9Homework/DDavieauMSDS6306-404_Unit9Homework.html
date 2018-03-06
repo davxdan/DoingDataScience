@@ -130,6 +130,162 @@ $(document).ready(function () {
 <ol style="list-style-type: lower-alpha">
 <li><p>In the IMDB, there are listings of full cast members for movies. Navigate to <a href="http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1" class="uri">http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1</a>. Feel free to View Source to get a good idea of what the page looks like in code.</p></li>
 <li><p>Scrape the page with any R package that makes things easy for you. Of particular interest is the table of the Cast in order of crediting. Please scrape this table (you might have to fish it out of several of the tables from the page) and make it a data.frame() of the Cast in your R environment</p></li>
+</ol>
+<pre class="r"><code>#Source of info http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.707.4464&amp;rep=rep1&amp;type=pdf
+library(XML)
+library(httr)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: 'dplyr'</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>siteurl&lt;-&quot;http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1&quot;
+IMDB_Raw&lt;-xmlParse(siteurl, isHTML = TRUE)</code></pre>
+<pre><code>## Unexpected end tag : style
+## Unexpected end tag : noscript
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## Tag section invalid
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## htmlParseStartTag: invalid element name
+## error parsing attribute name
+## htmlParseStartTag: invalid element name
+## Unexpected end tag : script
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: no name
+## Unexpected end tag : style
+## Unexpected end tag : embed
+## Unexpected end tag : div
+## Unexpected end tag : object
+## Unexpected end tag : a
+## Unexpected end tag : a
+## Unexpected end tag : noscript
+## Unexpected end tag : div
+## Unexpected end tag : style
+## Unexpected end tag : a
+## Unexpected end tag : a
+## Unexpected end tag : div
+## Unexpected end tag : body
+## htmlParseStartTag: invalid element name
+## Unexpected end tag : script
+## Unexpected end tag : div
+## Unexpected end tag : div
+## Unexpected end tag : div
+## Unexpected end tag : style
+## Unexpected end tag : a
+## Unexpected end tag : body
+## htmlParseStartTag: invalid element name
+## Unexpected end tag : script
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## Unexpected end tag : div
+## Unexpected end tag : div
+## Unexpected end tag : div
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: expecting ';'
+## htmlParseEntityRef: no name
+## htmlParseEntityRef: expecting ';'
+## Unexpected end tag : body</code></pre>
+<pre class="r"><code>IMDB_Root&lt;-xmlRoot(IMDB_Raw)
+IMDB_body = xmlChildren(IMDB_Root)$body
+IMDB_Content&lt;- readHTMLTable(IMDB_body,which = 1)
+names(IMDB_Content)&lt;-c(&quot;DontCare&quot;,&quot;Actor&quot;, &quot;NotInterested&quot;,&quot;Character&quot;)
+IMDB_Stage1&lt;-select(IMDB_Content,&quot;Actor&quot;,&quot;Character&quot;)
+IMDB_Stage1&lt;-IMDB_Stage1[order(IMDB_Stage1$Actor),]</code></pre>
+<ol start="3" style="list-style-type: lower-alpha">
 <li>Clean up the table</li>
 </ol>
 <ul>
@@ -138,10 +294,43 @@ $(document).ready(function () {
 <li>In the film, Mr. Warwick plays two characters, which makes his row look a little weird. Please replace his character column with just “Griphook / Professor Filius Flitwick” to make it look better.</li>
 <li>One row might result in “Rest of cast listed alphabetically” – remove this observation.</li>
 </ul>
+<pre class="r"><code>names(IMDB_Stage1)&lt;-c(&quot;Actor&quot;,&quot;Character&quot;)
+IMDB_Stage2&lt;-as.data.frame(IMDB_Stage1)
+IMDB_Stage2 &lt;- subset(x = IMDB_Stage2, Actor != &quot;...&quot;)
+IMDB_Stage2 &lt;- subset(x = IMDB_Stage2, Actor != &quot;&quot;)
+IMDB_Stage2 &lt;- subset(x = IMDB_Stage2, !is.na(Character))
+IMDB_Stage2 &lt;- data.frame(lapply(IMDB_Stage2,function(x) { gsub(&quot;\n&quot;,&quot;&quot;,x)}))
+IMDB_Stage2 &lt;- data.frame(lapply(IMDB_Stage2,function(x) { gsub(&quot;Griphook /              Professor Filius Flitwick&quot;,&quot;Griphook / Professor Filius Flitwick&quot;,x)}))
+IMDB_Stage2 &lt;- data.frame(lapply(IMDB_Stage2,function(x) { gsub(&quot;\\(uncredited)&quot;,&quot;&quot;,x)}))
+
+IMDB_Stage2Actors&lt;- trimws(IMDB_Stage2$Actor)
+names(IMDB_Stage2Actors)&lt;-c(&quot;Name&quot;)
+IMDB_Stage2Characters&lt;- trimws(IMDB_Stage2$Character)
+
+IMDB_Stage3&lt;-as.data.frame(cbind(IMDB_Stage2Actors,IMDB_Stage2Characters))
+names(IMDB_Stage3)&lt;-c(&quot;Actor&quot;,&quot;Character&quot;)</code></pre>
 <ol start="4" style="list-style-type: lower-alpha">
-<li><p>Split the Actor’s name into two columns: FirstName and Surname. Keep in mind that some actors/actresses have middle names as well. Please make sure that the middle names are in the FirstName column, in addition to the first name (example: given the Actor Frank Jeffrey Stevenson, the FirstName column would say “Frank Jeffrey.”)</p></li>
-<li><p>Present the first 10 rows of the data.frame() – It should have only FirstName, Surname, and Character columns.</p></li>
+<li>Split the Actor’s name into two columns: FirstName and Surname. Keep in mind that some actors/actresses have middle names as well. Please make sure that the middle names are in the FirstName column, in addition to the first name (example: given the Actor Frank Jeffrey Stevenson, the FirstName column would say “Frank Jeffrey.”)</li>
 </ol>
+<pre class="r"><code>library(tidyr)
+IMDB_Stage2Actors&lt;-as.data.frame(IMDB_Stage2Actors)
+names(IMDB_Stage2Actors)&lt;-c(&quot;Name&quot;)
+IMDB_Stage2Actors&lt;-extract(IMDB_Stage2Actors, Name, c(&quot;FirstName&quot;, &quot;LastName&quot;), &quot;([^ ]+) (.*)&quot;)</code></pre>
+<ol start="5" style="list-style-type: lower-alpha">
+<li>Present the first 10 rows of the data.frame() – It should have only FirstName, Surname, and Character columns.</li>
+</ol>
+<pre class="r"><code>head(IMDB_Stage2Actors,10)</code></pre>
+<pre><code>##    FirstName LastName
+## 1      Aaron   Virdee
+## 2     Adrian  Rawlins
+## 3     Afshan     Azad
+## 4       Alan  Rickman
+## 5     Albert     Tang
+## 6      Alfie McIlwain
+## 7     Alfred    Enoch
+## 8      Amber    Evans
+## 9        Amy    Wiles
+## 10      Anna  Shaffer</code></pre>
 </div>
 <div id="sportsball-50" class="section level3">
 <h3>2. SportsBall (50%)</h3>
@@ -165,6 +354,15 @@ $(document).ready(function () {
 <li>Human-readable axes with no overlap (you might have to flip x and y to fix that). Note: You do not have to convert the decimal to a percentage.</li>
 <li>Color the columns by the team member’s position (so, all PF’s should have the same color, etc.)</li>
 </ul>
+<pre class="r"><code>#library(RJSONIO)
+#library(jsonlite)
+#swdf = as.data.frame(rbind(c(&quot;Anakin&quot;, &quot;male&quot;, &quot;Tatooine&quot;, &quot;41.9BBY&quot;, &quot;yes&quot;), c(&quot;Amidala&quot;, &quot;female&quot;, &quot;Naboo&quot;, &quot;46.9BBY&quot;, &quot;no&quot;)))
+#names(swdf)=c(&quot;Name&quot;, &quot;Gender&quot;,&quot;Homeworld&quot;,&quot;Born&quot;,&quot;Jedi&quot;)
+#sw_json&lt;- toJSON(swdf)
+#class(sw_json)
+#sw_R &lt;- fromJSON(sw_json)
+#json_file &lt;- &quot;https://jsonplaceholder.typicode.com/posts&quot;
+#data &lt;- fromJSON(json_file)</code></pre>
 </div>
 
 

@@ -9,67 +9,28 @@ html_document:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+rm(list=ls())
 ```
 
 ###1. Harry Potter Cast (50%) 
 a. In the IMDB, there are listings of full cast members for movies.  Navigate to http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1.  Feel free to View Source to get a good idea of what the page looks like in code. 
 
+b. Scrape the page with any R package that makes things easy for you.  Of particular interest is the table of the Cast in order of crediting.  Please scrape this table (you might have to fish it out of several of the tables from the page) and make it a data.frame() of the Cast in your R environment 
+
 ```{r}
 #Source of info http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.707.4464&rep=rep1&type=pdf
 library(XML)
 library(httr)
-library(tidyHTML)
+library(dplyr)
 siteurl<-"http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1"
-IMDB_Source<-GET(url=siteurl)
 IMDB_Raw<-xmlParse(siteurl, isHTML = TRUE)
-IMDB_Raw<-htmlTreeParse(siteurl)
 IMDB_Root<-xmlRoot(IMDB_Raw)
-IMDB_Children<-xmlChildren(IMDB_Root)
-xmlNamespace(IMDB_Root)
-xmlName(IMDB_Root)
-xmlSize(IMDB_Root)
-class(IMDB_Raw)
-class(IMDB_Root)
-IMDB_Children<-xmlChildren(IMDB_Root)
-class(IMDB_Children)
-RootChildren<-xmlChildren(IMDB_Root)
-getNodeSet(IMDB_Raw, "//name")
-IMDB_NAmes<-getNodeSet(IMDB_Raw, "//name")
-xmlSize(IMDB_Root)
-xmlSApply(IMDB_Root, xmlName)
 IMDB_body = xmlChildren(IMDB_Root)$body
-xpathSApply(IMDB_body, "h1")
-xpathSApply(IMDB_body, "h2")
-IMDB_Content<- readHTMLTable(IMDB_Raw,which = 1)
 IMDB_Content<- readHTMLTable(IMDB_body,which = 1)
-IMDB_Children<-xmlChildren(IMDB_Root)
-RootChildren<-xmlChildren(IMDB_Root)
-getNodeSet(IMDB_Raw, "//name")
-IMDB_NAmes<-getNodeSet(IMDB_Raw, "//name")
-IMDB_xml_Names<-xmlSApply(IMDB_Root, xmlName)
-IMDB_body = xmlChildren(IMDB_Root)$body
-
-
-
-
-
+names(IMDB_Content)<-c("DontCare","Actor", "NotInterested","Character")
+IMDB_Stage1<-select(IMDB_Content,"Actor","Character")
+IMDB_Stage1<-IMDB_Stage1[order(IMDB_Stage1$Actor),]
 ```
-
-
-
-```{r}
-library(RJSONIO)
-library(jsonlite)
-swdf = as.data.frame(rbind(c("Anakin", "male", "Tatooine", "41.9BBY", "yes"), c("Amidala", "female", "Naboo", "46.9BBY", "no")))
-names(swdf)=c("Name", "Gender","Homeworld","Born","Jedi")
-sw_json<- toJSON(swdf)
-class(sw_json)
-sw_R <- fromJSON(sw_json)
-
-json_file <- "https://jsonplaceholder.typicode.com/posts"
-data <- fromJSON(json_file)
-```
-b. Scrape the page with any R package that makes things easy for you.  Of particular interest is the table of the Cast in order of crediting.  Please scrape this table (you might have to fish it out of several of the tables from the page) and make it a data.frame() of the Cast in your R environment 
 
 c. Clean up the table
 * It should not have blank observations or rows, a row that should be column names, or just ‘…’ 
@@ -77,10 +38,37 @@ c. Clean up the table
 * In the film, Mr. Warwick plays two characters, which makes his row look a little weird.  Please replace his character column with just “Griphook / Professor Filius Flitwick” to make it look better. 
 * One row might result in “Rest of cast listed alphabetically” – remove this observation. 
 
+```{r}
+names(IMDB_Stage1)<-c("Actor","Character")
+IMDB_Stage2<-as.data.frame(IMDB_Stage1)
+IMDB_Stage2 <- subset(x = IMDB_Stage2, Actor != "...")
+IMDB_Stage2 <- subset(x = IMDB_Stage2, Actor != "")
+IMDB_Stage2 <- subset(x = IMDB_Stage2, !is.na(Character))
+IMDB_Stage2 <- data.frame(lapply(IMDB_Stage2,function(x) { gsub("\n","",x)}))
+IMDB_Stage2 <- data.frame(lapply(IMDB_Stage2,function(x) { gsub("Griphook /              Professor Filius Flitwick","Griphook / Professor Filius Flitwick",x)}))
+IMDB_Stage2 <- data.frame(lapply(IMDB_Stage2,function(x) { gsub("\\(uncredited)","",x)}))
+
+IMDB_Stage2Actors<- trimws(IMDB_Stage2$Actor)
+names(IMDB_Stage2Actors)<-c("Name")
+IMDB_Stage2Characters<- trimws(IMDB_Stage2$Character)
+
+IMDB_Stage3<-as.data.frame(cbind(IMDB_Stage2Actors,IMDB_Stage2Characters))
+names(IMDB_Stage3)<-c("Actor","Character")
+```
+
 d. Split the Actor’s name into two columns: FirstName and Surname.  Keep in mind that some actors/actresses have middle names as well.  Please make sure that the middle names are in the FirstName column, in addition to the first name (example: given the Actor Frank Jeffrey Stevenson, the FirstName column would say “Frank Jeffrey.”) 
 
-e. Present the first 10 rows of the data.frame() – It should have only FirstName, Surname, and Character columns. 
+```{r}
+library(tidyr)
+IMDB_Stage2Actors<-as.data.frame(IMDB_Stage2Actors)
+names(IMDB_Stage2Actors)<-c("Name")
+IMDB_Stage2Actors<-extract(IMDB_Stage2Actors, Name, c("FirstName", "LastName"), "([^ ]+) (.*)")
+```
 
+e. Present the first 10 rows of the data.frame() – It should have only FirstName, Surname, and Character columns. 
+```{r}
+head(IMDB_Stage2Actors,10)
+```
 ###2. SportsBall (50%) 
 a. On the ESPN website, there are statistics of each NBA player.  Navigate to the San Antonio Spurs current statistics (likely http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs).  You are interested in the Shooting Statistics table. 
 
@@ -96,3 +84,15 @@ d. Create a colorful bar chart that shows the Field Goals Percentage Per Game fo
 * Relevant x and y axis labels (not simply variables names!)  
 * Human-readable axes with no overlap (you might have to flip x and y to fix that).  Note: You do not have to convert the decimal to a percentage. 
 * Color the columns by the team member’s position (so, all PF’s should have the same color, etc.) 
+
+```{r}
+#library(RJSONIO)
+#library(jsonlite)
+#swdf = as.data.frame(rbind(c("Anakin", "male", "Tatooine", "41.9BBY", "yes"), c("Amidala", "female", "Naboo", "46.9BBY", "no")))
+#names(swdf)=c("Name", "Gender","Homeworld","Born","Jedi")
+#sw_json<- toJSON(swdf)
+#class(sw_json)
+#sw_R <- fromJSON(sw_json)
+#json_file <- "https://jsonplaceholder.typicode.com/posts"
+#data <- fromJSON(json_file)
+```
