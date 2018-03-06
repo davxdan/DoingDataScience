@@ -73,7 +73,19 @@ head(IMDB_Stage2Actors,10)
 a. On the ESPN website, there are statistics of each NBA player.  Navigate to the San Antonio Spurs current statistics (likely http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs).  You are interested in the Shooting Statistics table. 
 
 b. Scrape the page with any R package that makes things easy for you.  There are a few tables on the page, so make sure you are targeting specifically the Shooting Statistics table.   
+```{r}
+rm(list=ls())
+library(XML)
+library(httr)
+library(dplyr)
 
+siteurl<-"http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs"
+spurs_Raw<-xmlTreeParse(siteurl,isHTML = TRUE)
+spurs_Raw<-readHTMLTable(spurs_Raw)
+spurs_Root<-xmlRoot(spurs_Raw)
+spurs_Children<-xmlChildren(spurs_Root)
+spurs_Content<- readHTMLTable(spurs_body,which = 1)
+```
 c. Clean up the table (You might get some warnings if you’re working with tibbles) 
 * You’ll want to create an R data.frame() with one observation for each player.  Make sure that you do not accidentally include blank rows, a row of column names, or the Totals row in the table as observations. 
 * The column PLAYER has two variables of interest in it: the player’s name and their position, denoted by 1-2 letters after their name.  Split the cells into two columns, one with Name and the other Position. 
