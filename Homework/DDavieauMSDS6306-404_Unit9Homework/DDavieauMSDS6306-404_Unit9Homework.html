@@ -145,7 +145,8 @@ library(dplyr)</code></pre>
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>siteurl&lt;-&quot;http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1&quot;
 IMDB_Raw&lt;-xmlParse(siteurl, isHTML = TRUE)</code></pre>
-<pre><code>## Unexpected end tag : style
+<pre><code>## Unexpected end tag : a
+## Unexpected end tag : noscript
 ## htmlParseEntityRef: no name
 ## htmlParseEntityRef: no name
 ## htmlParseEntityRef: no name
@@ -326,6 +327,19 @@ IMDB_Stage2Actors&lt;-extract(IMDB_Stage2Actors, Name, c(&quot;FirstName&quot;, 
 <ol style="list-style-type: lower-alpha">
 <li><p>On the ESPN website, there are statistics of each NBA player. Navigate to the San Antonio Spurs current statistics (likely <a href="http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs" class="uri">http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs</a>). You are interested in the Shooting Statistics table.</p></li>
 <li><p>Scrape the page with any R package that makes things easy for you. There are a few tables on the page, so make sure you are targeting specifically the Shooting Statistics table.</p></li>
+</ol>
+<pre class="r"><code>#rm(list=ls())
+#library(XML)
+#library(httr)
+#library(dplyr)
+
+#siteurl&lt;-&quot;http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs&quot;
+#spurs_Raw&lt;-xmlTreeParse(siteurl,isHTML = TRUE)
+#spurs_Raw&lt;-readHTMLTable(spurs_Raw)
+#spurs_Root&lt;-xmlRoot(spurs_Raw)
+#spurs_Children&lt;-xmlChildren(spurs_Root)
+#spurs_Content&lt;- readHTMLTable(spurs_body,which = 1)</code></pre>
+<ol start="3" style="list-style-type: lower-alpha">
 <li>Clean up the table (You might get some warnings if you’re working with tibbles)</li>
 </ol>
 <ul>
