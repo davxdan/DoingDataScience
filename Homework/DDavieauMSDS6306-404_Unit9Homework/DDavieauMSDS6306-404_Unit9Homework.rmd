@@ -74,16 +74,16 @@ a. On the ESPN website, there are statistics of each NBA player.  Navigate to th
 
 b. Scrape the page with any R package that makes things easy for you.  There are a few tables on the page, so make sure you are targeting specifically the Shooting Statistics table.   
 ```{r}
-#rm(list=ls())
-#library(XML)
-#library(httr)
-#library(dplyr)
+rm(list=ls())
+library(XML)
+library(httr)
+library(dplyr)
 
-#siteurl<-"http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs"
-#spurs_Raw<-xmlTreeParse(siteurl,isHTML = TRUE)
+siteurl<-"http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs"
+spurs_Raw<-xmlTreeParse(siteurl,isHTML = TRUE)
 #spurs_Raw<-readHTMLTable(spurs_Raw)
-#spurs_Root<-xmlRoot(spurs_Raw)
-#spurs_Children<-xmlChildren(spurs_Root)
+spurs_Root<-xmlRoot(spurs_Raw)
+spurs_Children<-xmlChildren(spurs_Root)
 #spurs_Content<- readHTMLTable(spurs_body,which = 1)
 ```
 c. Clean up the table (You might get some warnings if you’re working with tibbles) 
