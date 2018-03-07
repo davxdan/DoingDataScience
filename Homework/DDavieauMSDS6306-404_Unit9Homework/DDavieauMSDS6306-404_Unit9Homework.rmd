@@ -17,16 +17,18 @@ a. In the IMDB, there are listings of full cast members for movies.  Navigate to
 
 b. Scrape the page with any R package that makes things easy for you.  Of particular interest is the table of the Cast in order of crediting.  Please scrape this table (you might have to fish it out of several of the tables from the page) and make it a data.frame() of the Cast in your R environment 
 
-```{r}
+```{r tidy=TRUE}
 #Source of info http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.707.4464&rep=rep1&type=pdf
 library(XML)
 library(httr)
 library(dplyr)
+library(tidyr)
 siteurl<-"http://www.imdb.com/title/tt1201607/fullcredits?ref_=tt_ql_1"
 ```
-
-```{r,}
-IMDB_Raw<-xmlParse(siteurl, isHTML = TRUE)
+```{r,results='hide',tidy=TRUE}
+IMDB_Raw<-xmlParse(siteurl, isHTML = TRUE) #results are hidden 
+```
+```{r, tidy=TRUE}
 IMDB_Root<-xmlRoot(IMDB_Raw)
 IMDB_body = xmlChildren(IMDB_Root)$body
 IMDB_Content<- readHTMLTable(IMDB_body,which = 1)
@@ -41,7 +43,7 @@ c. Clean up the table
 * In the film, Mr. Warwick plays two characters, which makes his row look a little weird.  Please replace his character column with just “Griphook / Professor Filius Flitwick” to make it look better. 
 * One row might result in “Rest of cast listed alphabetically” – remove this observation. 
 
-```{r}
+```{r, tidy=TRUE}
 names(IMDB_Stage1)<-c("Actor","Character")
 IMDB_Stage2<-as.data.frame(IMDB_Stage1)
 IMDB_Stage2 <- subset(x = IMDB_Stage2, Actor != "...")
@@ -61,54 +63,48 @@ names(IMDB_Stage3)<-c("Actor","Character")
 
 d. Split the Actor’s name into two columns: FirstName and Surname.  Keep in mind that some actors/actresses have middle names as well.  Please make sure that the middle names are in the FirstName column, in addition to the first name (example: given the Actor Frank Jeffrey Stevenson, the FirstName column would say “Frank Jeffrey.”) 
 
-```{r}
-library(tidyr)
+```{r, tidy=TRUE}
 IMDB_Stage2Actors<-as.data.frame(IMDB_Stage2Actors)
 names(IMDB_Stage2Actors)<-c("Name")
 IMDB_Stage2Actors<-extract(IMDB_Stage2Actors, Name, c("FirstName", "LastName"), "([^ ]+) (.*)")
 ```
 
 e. Present the first 10 rows of the data.frame() – It should have only FirstName, Surname, and Character columns. 
-```{r}
+```{r, tidy=TRUE}
 head(IMDB_Stage2Actors,10)
 ```
 ###2. SportsBall (50%) 
 a. On the ESPN website, there are statistics of each NBA player.  Navigate to the San Antonio Spurs current statistics (likely http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs).  You are interested in the Shooting Statistics table. 
 
 b. Scrape the page with any R package that makes things easy for you.  There are a few tables on the page, so make sure you are targeting specifically the Shooting Statistics table.   
-```{r}
+```{r, tidy=TRUE}
 rm(list=ls())
 library(XML)
 library(httr)
 library(dplyr)
-```
-```{r}
 siteurl<-"http://www.espn.com/nba/team/stats/_/name/sa/san-antonio-spurs"
-#spurs_Raw<-xmlTreeParse(siteurl,isHTML = TRUE,useInternalNodes = FALSE)
-#class(spurs_Raw)
+```
+```{r,results='hide',tidy=TRUE}
 spurs_html_Raw<-htmlParse(siteurl)
 ```
-```{R}
-#spurs_html_tree_Raw<-htmlTreeParse(siteurl)
+```{r, tidy=TRUE}
 spurs_Root<-xmlRoot(spurs_html_Raw)
 spurs_body<-xmlChildren(spurs_Root)$body
 spurs_Content<- readHTMLTable(spurs_body,which = 1)
 ```
 c. Clean up the table (You might get some warnings if you’re working with tibbles) 
 * You’ll want to create an R data.frame() with one observation for each player.  Make sure that you do not accidentally include blank rows, a row of column names, or the Totals row in the table as observations. 
-```{r}
+```{r, tidy=TRUE}
 spurs_Content<-spurs_Content[-c(1:22,40), ] 
 names(spurs_Content)<-c("PLAYER","FGM","FGA","FGpct","ThreePM","ThreePA","ThreePpct","FTM","FTA","FTpct","TwoPM","TwoPA","TwoPpct","PPS","AFGpct")
 ```
 
 * The column PLAYER has two variables of interest in it: the player’s name and their position, denoted by 1-2 letters after their name.  Split the cells into two columns, one with Name and the other Position. 
-```{r}
-separate(spurs_Content, PLAYER, c("PlayerName", "Position"), sep = ",", remove = TRUE, convert = FALSE, extra = "warn", fill = "warn")
-spurs_Content
+```{r, tidy=TRUE}
+spurs_Content<-separate(spurs_Content, PLAYER, c("PlayerName", "Position"), sep = ", ", remove = TRUE, convert = TRUE, extra = "warn", fill = "warn")
 ```
-
 * Check the data type of all columns.  Convert relevant columns to numeric.  Check the data type of all columns again to confirm that they have changed! 
-```{r}
+```{r, tidy=TRUE}
 spurs_Content$FGM <- as.numeric(as.character(spurs_Content$FGM))
 spurs_Content$FGA <- as.numeric(as.character(spurs_Content$FGA))
 spurs_Content$FGpct <- as.numeric(as.character(spurs_Content$FGpct))
@@ -118,7 +114,6 @@ spurs_Content$ThreePpct <- as.numeric(as.character(spurs_Content$ThreePpct))
 spurs_Content$FTM <- as.numeric(as.character(spurs_Content$FTM))
 spurs_Content$FTA <- as.numeric(as.character(spurs_Content$FTA))
 spurs_Content$FTpct <- as.numeric(as.character(spurs_Content$FTpct))
-
 spurs_Content$TwoPM <- as.numeric(as.character(spurs_Content$TwoPM))
 spurs_Content$TwoPA <- as.numeric(as.character(spurs_Content$TwoPA))
 spurs_Content$TwoPpct <- as.numeric(as.character(spurs_Content$TwoPpct))
@@ -126,22 +121,22 @@ spurs_Content$PPS <- as.numeric(as.character(spurs_Content$PPS))
 spurs_Content$AFGpct <- as.numeric(as.character(spurs_Content$AFGpct))
 spurs_Content
 ```
-
-
 d. Create a colorful bar chart that shows the Field Goals Percentage Per Game for each person. It will be graded on the following criteria. 
 * Informative Title, centered 
 * Relevant x and y axis labels (not simply variables names!)  
 * Human-readable axes with no overlap (you might have to flip x and y to fix that).  Note: You do not have to convert the decimal to a percentage. 
 * Color the columns by the team member’s position (so, all PF’s should have the same color, etc.) 
+```{r, tidy=TRUE}
+library(ggplot2)
+palette <- c("#999999", "#E69F00", "#009E73", "#0072B2", "#D55E00", "#CC79A7")
+theme_set(theme_bw())
+ggplot(spurs_Content, aes(x=spurs_Content$PlayerName, y=spurs_Content$FGpct)) + 
+   coord_flip(xlim = NULL, ylim = NULL, expand = TRUE) +
+   labs(title="Field Goal Percentages", 
+       subtitle="Make Vs Avg. Mileage", x = "Player", y = "Field Goal Percent") + 
+    geom_bar(width=.5, aes(fill=spurs_Content$Position),   
+             stat="identity",
+             position=position_dodge())+
+scale_fill_manual(values=palette, name = "Position")
 
-```{r}
-#library(RJSONIO)
-#library(jsonlite)
-#swdf = as.data.frame(rbind(c("Anakin", "male", "Tatooine", "41.9BBY", "yes"), c("Amidala", "female", "Naboo", "46.9BBY", "no")))
-#names(swdf)=c("Name", "Gender","Homeworld","Born","Jedi")
-#sw_json<- toJSON(swdf)
-#class(sw_json)
-#sw_R <- fromJSON(sw_json)
-#json_file <- "https://jsonplaceholder.typicode.com/posts"
-#data <- fromJSON(json_file)
 ```
