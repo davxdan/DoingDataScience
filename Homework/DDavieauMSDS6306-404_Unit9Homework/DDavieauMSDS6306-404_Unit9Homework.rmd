@@ -133,7 +133,7 @@ theme_set(theme_bw())
 ggplot(spurs_Content, aes(x=spurs_Content$PlayerName, y=spurs_Content$FGpct)) + 
    coord_flip(xlim = NULL, ylim = NULL, expand = TRUE) +
    labs(title="Field Goal Percentages", 
-       subtitle="Make Vs Avg. Mileage", x = "Player", y = "Field Goal Percent") + 
+        x = "Player", y = "Field Goal Percent") + 
     geom_bar(width=.5, aes(fill=spurs_Content$Position),   
              stat="identity",
              position=position_dodge())+
