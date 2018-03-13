@@ -20,7 +20,7 @@ First we need to get a temporary token
 
 ```{r}
 library(Rfacebook)
-token <- "EAACEdEose0cBAMTgg9FBcTTpSTgWc5zjYPuSNZA1dR0cSznJtu4WmtSoAP0gzDXKAf5ZCPS8kUQ3IXhtHF7kDFoErG9cljDvojoXLhToAGBcf3YSNVMkz4pcMAiROBTSHLK6ivK6KZCoR2pH4ZATI8IWjQtCEIV7TJcHZAuSFlHAhQLYmdxN4oOrhC0AmRfGIA5x3N7TqpgZDZD" 
+token <- "EAACEdEose0cBALdEOVGuPJqvOhozRlb8AQ0LDOGn2QI2dHEPQcSPMxxqMSqGjLOoz2vgr3ZBX1JDnygTNqw3d6e3fAwvnfWAvp77uZB0JJWR92ocZA87ltWzBTkrRXUsbuRT4fpeuK6yLZCprpRzZABk7NdEubu9IP96HTwLPCJ7Irh1tZCgb7B3PBYEyqgQ4TqbcNWKFs6mFt0ZA67LVZBj4akrvHZCLSZC0b7FGFMRf2NwZDZD" 
 ```
 
 
@@ -38,5 +38,6 @@ me
 
 ```{r}
 myfriends<- getFriends(token, simplify = FALSE)
+#myfriends<- getFriends(token, simplify = TRUE)
 myfriends
 ```
