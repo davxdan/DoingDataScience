@@ -3,7 +3,7 @@ title: "MSDS6306-404 Session 9 Assignment - Preparing Data"
 author: "Daniel Davieau"
 date: "March 4, 2018"
 html_document:
-    keep_md: yes
+    keep_md: TRUE
     df_print: paged
 ---
 
