@@ -2,7 +2,8 @@
 title: "DDavieauMSDS6306-404Unit10Homework – Exploratory Data"
 author: "Daniel Davieau"
 date: "March 20, 2018"
-output: html_document
+html_document:
+    keep_md: TRUE
 ---
 
 ```{r setup, include=FALSE}
@@ -12,6 +13,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 rm(list=ls())
 setwd("~/GitHub/DoingDataScience/Homework/DDavieauMSDS6306-404Unit10Homework")
+library(ggplot2)
+library(reshape2)
+library(readr)
+#library(wordcloud2)
 sessionInfo()
 ```
 Background: Your organization is responsible for building new VA hospitals in the mainland of the United States.  You are a little overwhelmed by the prospect, not sure which places need the most help.  You decide to begin by exploring healthcare facility data recorded by the U.S. Government. 
@@ -22,27 +27,90 @@ Disclaimer: While these are real data, the assignment is not an endorsement for 
 
 a. This data set is a survey of every known healthcare facility that offers mental health services in the United States in 2015.  Navigate to https://datafiles.samhsa.gov/studydataset/national-mental-health-services-survey-2015-n-mhss-2015-ds0001-nid17098 and select the R download.  Look through the codebook PDF for an explanation on certain variables.  Upon opening the RDA file, the data set should be inserted into your global environment, which you can then reference.  
 
+```{r}
+load("~/GitHub/DoingDataScience/Homework/DDavieauMSDS6306-404Unit10Homework/N-MHSS-2015-DS0001-data/N-MHSS-2015-DS0001-data-r.rda")
+```
+
 b. Please create code which lists the State abbreviations without their counts, one abbreviation per State value.  It does not have to in data frame format.  A vector is fine.  
+
+```{r}
+StateAbbreviations<-as.vector(unique(mh2015_puf$LST))
+```
 
 c. Filter the data.frame from 1A.  We are only interested in the Veterans Administration (VA) medical centers in the mainland United States—create a listing of counts of these centers by state, including only mainland locations.  Alaska, Hawaii, and U.S. territories should be omitted.  DC, while not a state, is in the mainland, so it should remain included.  Convert this to data.frame()  
 
+```{r}
+
+Filtered_mh2015_puf<-cbind(mh2015_puf[1:12])
+#include only VA Med Centers
+Filtered_mh2015_puf <- subset(x = Filtered_mh2015_puf, FACILITYTYPE == "Veterans Administration medical center (VAMC) or other VA health care facility")
+# exclude Alaska, Hawaii, and U.S. territories
+Filtered_mh2015_puf <- subset(x = Filtered_mh2015_puf, LST != "AK    "& LST != "HI    "& LST != "PR    "& LST != "GU    ")
+```
+
 d. Create a ggplot barchart of this filtered data set.  Vary the bar’s colors by what State it has listed.  Give it an appropriately professional title that is centered.  Make sure you have informative axis labels.  The State axis should be readable, not layered over each other.  You’re welcome to have a legend or not. 
+
+```{R}
+ggplot(Filtered_mh2015_puf,aes(x=Filtered_mh2015_puf$LST,fill=Filtered_mh2015_puf$LST)) +
+labs(title="VA Hospitals by State", x = "", y="Count") +
+geom_bar() +
+coord_flip()+
+theme(plot.title = element_text(hjust = 0.5),axis.text.y=element_text(size=5), legend.position="none")
+#theme(plot.title=element_text(size=25), axis.title.x=element_text(size=20), axis.title.y=element_text(size=20), axis.text.x=element_text(size=15), axis.text.y=element_text(size=15))
+```
 
 ##2. Cleaning and Bringing in New Features (60%) 
   
 a. This graph (1D) might be somewhat misleading, as bigger states may have more hospitals, but could be more sparsely located.  Read statesize.csv into your R environment.  This contains essentially a vector of square miles for each state. In trying to merge it with your data.frame() from 1C, you find that they don’t match.  Use paste() on your LST column in 1C to see what the matter is, and write what you observe in a comment.  
 
+```{r}
+statesize <- read_csv("~/GitHub/DoingDataScience/Homework/DDavieauMSDS6306-404Unit10Homework/statesize.csv")
+#paste(Filtered_mh2015_puf$LST) 
+```
+
+> The problem is that there are trailing spaces in the State Abbreviation  
+
 b. Correct the problem with the LST column using any method in R that is programmatic and easily understandable. Once you have made these state abbreviations identical to statesize.csv’s Abbrev column, merge the data.frame() from 1C and statesize.csv in order to add size information.  
+
+```{r}
+Filtered_mh2015_puf$Abbrev<-trimws(Filtered_mh2015_puf$LST)
+mergedFiltered_mh2015_puf<- merge(x= Filtered_mh2015_puf, y=statesize, by = c("Abbrev"), all=FALSE)
+```
 
 c. Calculate a new variable in your combined data.frame() which indicates the VA hospitals per thousand square miles.  
 
+```{r}
+StateCounts<-data.frame(table(mergedFiltered_mh2015_puf$Abbrev))
+colnames(StateCounts)<- c("Abbrev","Count")
+StateCounts
+mergedFiltered_mh2015_puf<-merge(x= StateCounts, y=mergedFiltered_mh2015_puf, by = c("Abbrev"), all=FALSE)
+mergedFiltered_mh2015_puf$VAPer1000SquareMiles<-(mergedFiltered_mh2015_puf$SqMiles/1000)/mergedFiltered_mh2015_puf$Count
+```
 d. Create another ggplot which considers the VAs per square thousand miles, rather than just frequency.   
 • Make sure the State axis is readable, like before.  Change the title and axes as appropriate.   
 • Modify the ggplot syntax to make your bars in descending order (there are StackOverflow topics for this, and I have demonstrated how in Live Coding in prior classes).   
 • Color-code the bars based on Region (see the merged data.frame)—however, change the color scheme from the default.  Any set of colors is fine, so long as it is readable.   
 • Keep the legend—you should have four regions and therefore four colors.  
 
+```{r}
+MergedFiltered_mh2015_puf<-cbind(mergedFiltered_mh2015_puf[1:2],mergedFiltered_mh2015_puf[17:18])
+#uniqueMergedFiltered_mh2015_puf<-unique(MergedFiltered_mh2015_puf)
+
+palette <- c("#999999", "#E69F00", "#009E73", "#0072B2", "#D55E00", "#CC79A7")
+
+ggplot(MergedFiltered_mh2015_puf, aes(x=reorder(MergedFiltered_mh2015_puf$Abbrev,-MergedFiltered_mh2015_puf$VAPer1000SquareMiles),y=MergedFiltered_mh2015_puf$VAPer1000SquareMiles,   fill=MergedFiltered_mh2015_puf$Region )) +
+labs(title="VA Hospitals by State", x = "", y="Count per Square Mile") +
+geom_bar(stat = "identity", position = "dodge") +
+coord_flip()+
+theme(plot.title = element_text(hjust = 0.5),axis.text.y=element_text(size=5) )+
+scale_fill_manual(values=palette, name = "Position")
+
+```
+
 e. What patterns do you see?  By this metric, is there any region that seems relatively high for VA medical centers per thousand square miles?  How about low?  Given these data, what advice might you give your boss before you start modeling (and why)?  
+
+> It seems like there are more VA Hospitals in the west and very few in the northeast.
+>The advice I would give is findout where veterans live to ensure we have enough hospitals in the correct regions.
 
 Reminder 
 To complete this assignment, please submit one RMarkdown and matching HTML file at least one hour before your live session. Please submit all files at the same time; only one submission is granted. Good luck
