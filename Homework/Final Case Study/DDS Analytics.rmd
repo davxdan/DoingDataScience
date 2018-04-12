@@ -1,0 +1,49 @@
+---
+title: "DDS Analytics"
+author: "Daniel Davieau, Emil Ramos, Lakeitra Webb"
+date: "April 12, 2018"
+output: 
+  html_document: 
+    keep_md: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+rm(list=ls())
+library(readxl)
+CaseStudy2_data <- read_excel("Homework/Final Case Study/Input/CaseStudy2-data.xlsx")
+View(CaseStudy2_data)
+library(ggplot2)
+library(reshape2)
+library(readr)
+#library(wordcloud2)
+sessionInfo()
+```
+
+```{r}
+#create a linear model using lm(FORMULA, DATAVAR)
+#predict the fall enrollment (ROLL) using the unemployment rate (UNEM) and number of spring high school graduates (HGRAD)
+
+dim(CaseStudy2_data)
+
+
+palette <- c("#999999", "#E69F00", "#009E73", "#0072B2", "#D55E00")
+compare1 <- lm(Education~DailyRate, data=CaseStudy2_data)
+
+ggplot(CaseStudy2_data, aes(x=Education, y=DailyRate)) + geom_bar(stat="identity") +
+scale_fill_manual(values=palette)
+
+hist(CaseStudy2_data$Age, breaks = 5 ,col = "lightblue",border = "white")
+
+#display model
+
+
+ggplot(CaseStudy2_data, aes(x=Education, y=DailyRate, color = Age)) +
+    geom_point(shape=1) +
+    geom_smooth(method=lm, fullrange=TRUE)
+```
